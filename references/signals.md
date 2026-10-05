@@ -17,6 +17,7 @@ Every signal Rabbit Hole watches, who measures it (hook or model), the threshold
 | Needle-moving | model | work is cosmetic, preference-based or off the critical path while the mission is delivery, proof, sales or a user flow | Drift checkpoint before going deeper. |
 | Creative churn | model | 2 or 3 prompt or model attempts with no usable asset, off the critical path | Drift checkpoint; recommend a placeholder. |
 | Side thread | model | shopping, purchase research, speculative optimisation, a new build thread the mission does not need | Drift checkpoint. |
+| Late night | UserPromptSubmit hook | local time inside `quietHours` (first prompt there, then every 45 minutes per session) | Required one-line nudge naming the time and suggesting bed. Exempt from override. Logged as `late-night`. `RABBIT_HOLE_LATE_NIGHT=off` disables it. |
 | Fatigue | hook (clock) and model (evidence) | local time inside `quietHours` AND (loop trip, edit-revert churn on one file, still-broken rising, or low energy at intake) | Fatigue checkpoint, once per session unless things worsen. |
 | Override | model | the person chose keep going or said it is important | Signal goes quiet until new evidence. Log `check --result overridden`. |
 | Confidence | model | below medium | Say nothing. |
@@ -30,7 +31,8 @@ Every signal Rabbit Hole watches, who measures it (hook or model), the threshold
 - At most 3 choices per checkpoint, recommended first.
 - One intake question per session.
 - One fatigue check per session unless conditions materially worsen.
+- One late-night nudge per 45 minutes inside quiet hours.
 
 ## Tuning
 
-Raise a threshold when `rabbit-hole stats` shows the same signal overridden more often than accepted. Lower it when parked items keep being resumed late. Change `cadenceMinutes`, `quietHours` and `strictness` in `config.json`; the mechanical thresholds are constants at the top of `lib/pre-tool-use.js`, and the workhorse tool list and target rules live in `lib/common.js`.
+Raise a threshold when `rabbit-hole stats` shows the same signal overridden more often than accepted. Lower it when parked items keep being resumed late. Change `cadenceMinutes`, `quietHours` and `strictness` in `config.json`; the mechanical thresholds are constants at the top of `lib/pre-tool-use.js`, the late-night repeat interval is `LATE_NIGHT_REPEAT_MINUTES` in `lib/user-prompt-submit.js`, and the workhorse tool list and target rules live in `lib/common.js`.
