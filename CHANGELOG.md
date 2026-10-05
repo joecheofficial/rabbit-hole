@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.0.2 (2026-10-06)
+
+Late-night nudge, and a clock fix that made quiet hours start late.
+
+Added
+- Late-night signal: inside quiet hours, the UserPromptSubmit hook adds a required `Rabbit Hole signal: late night (HH:MM, inside quiet hours)` line telling the assistant to open its reply by naming the time and suggesting bed, with an offer to hand the rest to background agents. It repeats at most every 45 minutes per session and is logged as kind `late-night`. `RABBIT_HOLE_LATE_NIGHT=off` turns it off.
+- `RABBIT_HOLE_NOW` (ISO timestamp) pins the hook's clock, for tests.
+
+Fixed
+- `localClock` applied `% 24` to minutes as well as hours, so 00:48 read as 00:00 and 23:31 as 23:07, which skewed quiet-hours boundaries and the times shown in reminders. Minutes now wrap at 60. Regression test covers :48 and :31.
+
 ## 2.0.1 (2026-10-02)
 
 Loop guard no longer fires on ordinary Bash-heavy work; frequency rule now measures churn on the same target.

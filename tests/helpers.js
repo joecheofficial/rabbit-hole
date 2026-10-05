@@ -14,7 +14,7 @@ function runHook(name, input, home, extraEnv) {
   const script = path.join(ROOT, 'hooks', 'claude-code', name);
   const res = spawnSync('bash', [script], {
     input: typeof input === 'string' ? input : JSON.stringify(input),
-    env: Object.assign({}, process.env, { RABBIT_HOLE_HOME: home }, extraEnv || {}),
+    env: Object.assign({}, process.env, { RABBIT_HOLE_HOME: home, RABBIT_HOLE_LATE_NIGHT: 'off' }, extraEnv || {}),
     encoding: 'utf8',
   });
   return res;

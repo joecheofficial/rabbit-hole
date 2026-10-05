@@ -261,6 +261,18 @@ test('pre-tool-use keeps the raw frequency rule for non-workhorse tools such as 
   assert.equal(h.readSession(home, 'q7').trace.length, 10, 'trace is capped at 10');
 });
 
+test('localClock keeps minutes intact (regression: minutes were taken modulo 24)', () => {
+  const c = require('../lib/common');
+  const utc = { timezone: 'UTC' };
+  assert.equal(c.localClock(utc, new Date('2026-01-16T00:48:00Z')).hhmm, '00:48');
+  assert.equal(c.localClock(utc, new Date('2026-01-15T23:31:00Z')).hhmm, '23:31');
+  assert.equal(c.localClock(utc, new Date('2026-01-15T23:31:00Z')).minutes, 23 * 60 + 31);
+  const quiet = { timezone: 'UTC', quietHours: { start: '23:30', end: '06:00' } };
+  assert.ok(!c.inQuietHours(quiet, new Date('2026-01-15T23:29:00Z')));
+  assert.ok(c.inQuietHours(quiet, new Date('2026-01-15T23:31:00Z')), '23:31 must not read as 23:07');
+  assert.ok(c.inQuietHours(quiet, new Date('2026-01-15T23:48:00Z')), '23:48 must not read as 23:00');
+});
+
 test('loop guard helpers: command normalisation and workhorse targets', () => {
   const c = require('../lib/common');
   assert.equal(c.normaliseCommand('npm   test -- --seed 42'), c.normaliseCommand('npm test -- --seed 7'));
@@ -283,4 +295,21 @@ test('pre-tool-use never exits non-zero on garbage input', () => {
   const home = h.tmpHome();
   const res = h.runHook('pre-tool-use.sh', '{"broken":', home);
   assert.equal(res.status, 0);
+});
+
+test('late-night signal fires inside quiet hours and repeats at most every 45 minutes', () => {
+  const home = h.tmpHome();
+  fs.writeFileSync(path.join(home, 'config.json'), JSON.stringify({ timezone: 'UTC', quietHours: { start: '23:00', end: '06:00' } }));
+  const input = { prompt: 'still building marketplace features very late tonight', session_id: 'late-1' };
+  const first = h.runHook('user-prompt-submit.sh', input, home, { RABBIT_HOLE_LATE_NIGHT: 'on', RABBIT_HOLE_NOW: '2026-01-15T23:30:00Z' });
+  assert.match(first.stdout, /Intake, first turn only/);
+  assert.match(first.stdout, /late night \(23:30/, 'fires on the first prompt of a session too');
+  const second = h.runHook('user-prompt-submit.sh', input, home, { RABBIT_HOLE_LATE_NIGHT: 'on', RABBIT_HOLE_NOW: '2026-01-15T23:31:00Z' });
+  assert.doesNotMatch(second.stdout, /late night/);
+  const third = h.runHook('user-prompt-submit.sh', input, home, { RABBIT_HOLE_LATE_NIGHT: 'on', RABBIT_HOLE_NOW: '2026-01-16T00:14:00Z' });
+  assert.doesNotMatch(third.stdout, /late night/);
+  const fourth = h.runHook('user-prompt-submit.sh', input, home, { RABBIT_HOLE_LATE_NIGHT: 'on', RABBIT_HOLE_NOW: '2026-01-16T00:20:00Z' });
+  assert.match(fourth.stdout, /late night \(00:20/);
+  const off = h.runHook('user-prompt-submit.sh', { prompt: 'another late session starting now', session_id: 'late-2' }, home, { RABBIT_HOLE_NOW: '2026-01-16T01:00:00Z' });
+  assert.doesNotMatch(off.stdout, /late night/, 'RABBIT_HOLE_LATE_NIGHT=off silences it');
 });

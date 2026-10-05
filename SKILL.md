@@ -77,7 +77,7 @@ When a tangent or new idea appears mid-task, park it: `rabbit-hole park "<idea>"
 
 ## Fatigue beyond the clock
 
-A late clock alone is not a signal. Fire the fatigue check when local time is inside quiet hours AND at least one of: the loop guard has tripped, the same file is being edited and reverted, the still-broken counter is climbing, or energy was declared low at intake. Fire it once per session unless things get materially worse.
+When the hook injects `Rabbit Hole signal: late night (...)`, it is required: open the reply with one line naming the time and suggesting bed, and offer to hand the remaining work to background agents with a morning summary. Then carry on with the request. It is exempt from the go-quiet-after-override rule and comes back at most every 45 minutes. Beyond that nudge, a late clock alone is not a signal. Fire the fatigue check when local time is inside quiet hours AND at least one of: the loop guard has tripped, the same file is being edited and reverted, the still-broken counter is climbing, or energy was declared low at intake. Fire it once per session unless things get materially worse.
 
 `It seems like it is getting late and the last stretch has been going in circles. Want to call it for tonight?` Choices: save state and stop here (recommended), wrap up in 15 minutes, keep going.
 

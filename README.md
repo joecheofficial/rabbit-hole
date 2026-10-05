@@ -56,7 +56,9 @@ Without the hooks the assistant still runs the intake, the needle-moving check, 
 
 **Loops.** Mechanical signals from the tool trace, plus the "still broken" rule: three turns in a row that read as still failing stop the patch cycle. The assistant names the assumption that may be wrong and asks one diagnostic question before the next change.
 
-**Fatigue.** A late clock alone is not a signal. Inside your quiet hours AND evidence of going in circles (a loop trip, edit-and-revert churn, a rising still-broken count, low energy declared at intake) fires one fatigue check per session.
+**Late night.** Inside your quiet hours, the first prompt you send gets a required one-line nudge at the top of the reply: the local time and a suggestion to stop, with an offer to hand the rest to background agents and leave a morning summary. After that it repeats at most every 45 minutes per session, even if you choose to keep going, and is logged as `late-night`. Set `RABBIT_HOLE_LATE_NIGHT=off` in the environment the hooks run in to turn it off; quiet hours themselves are set in `config.json`.
+
+**Fatigue.** Beyond the late-night nudge, a late clock alone is not a signal. Inside your quiet hours AND evidence of going in circles (a loop trip, edit-and-revert churn, a rising still-broken count, low energy declared at intake) fires one fatigue check per session.
 
 ## The checkpoint format
 
