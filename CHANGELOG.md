@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.3 (2026-10-21)
+
+- Weekly updater: it now works when the folder is reached through a differently capitalised path on a Mac or Windows (it used to say the folder "sits inside a larger repository"), and a copy cloned before an upstream history rewrite is recognised and offered a safe, backed-up `node scripts/self-update.js --realign` instead of a permanent "has your own commits" warning.
+
 ## 2.0.2 (2026-10-06)
 
 Late-night nudge, and a clock fix that made quiet hours start late.
